@@ -1,0 +1,24 @@
+{
+  "name": "leaflet-rotate-map",
+  "version": "0.1.1",
+  "description": "Enable to rotate Leaflet map",
+  "main": "leaflet-src.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ronikar/Leaflet.git"
+  },
+  "keywords": [
+    "leaflet",
+    "maps",
+    "rotate"
+  ],
+  "author": "Roni Karilkar",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/ronikar/Leaflet/issues"
+  },
+  "homepage": "https://github.com/ronikar/Leaflet#readme"
+}
