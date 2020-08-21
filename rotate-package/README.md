@@ -4,6 +4,7 @@ In addition, there are some improvements like:
 
 * Fix popup
 * Add getCircumscribedBounds
+* Fix Draggable
 
 ## Demo
 Look at `index.html` file in `examples` folder
