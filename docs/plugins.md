@@ -1315,11 +1315,11 @@ These plugins provide new markers or news ways of converting abstract data into 
 	</tr>
     	<tr>
 		<td>
-			<a href="https://github.com/marslan390/BeautifyMarker">Leaflet.BeautifyMarkers</a>
+			<a href="https://github.com/masajid390/BeautifyMarker">Leaflet.BeautifyMarkers</a>
 		</td><td>
 			Lightweight plugin that adds colorful iconic markers without image and gives full control of style to end user (i.e. Unlimited colors and CSS styling).
 		</td><td>
-			<a href="https://github.com/marslan390">Muhammad Arslan Sajid</a>
+			<a href="https://github.com/masajid390">Muhammad Arslan Sajid</a>
 		</td>
 	</tr>
 	<tr>
@@ -1843,6 +1843,17 @@ These plugins provide new markers or news ways of converting abstract data into 
 		</td>
 		<td>
 			<a href="https://github.com/iDerekLi/">Derek Li</a>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<a href="https://github.com/coyotesqrl/Leaflet.ArrowCircle">Leaflet.ArrowCircle</a>
+		</td>
+		<td>
+		    A Marker extension to display circles with directional arrows.
+		</td>
+		<td>
+			<a href="https://github.com/coyotesqrl/">R.A. Porter</a>
 		</td>
 	</tr>
 </table>
@@ -2809,7 +2820,7 @@ These plugins help users select either overlays or areas in the map.
 			<a href="https://github.com/zakjan/leaflet-lasso">leaflet-lasso</a>
 		</td>
 		<td>
-			True lasso selection plugin (<a href="http://zakjan.github.io/leaflet-lasso/">Demo</a>)
+			Lasso selection plugin (<a href="http://zakjan.github.io/leaflet-lasso/">Demo</a>)
 		</td>
 		<td>
 			<a href="https://github.com/zakjan">Jan Zak</a>
@@ -3991,6 +4002,18 @@ Buttons, sliders, toolbars, sidebars, and panels.
 			<a href="https://github.com/publiclab">Public Lab</a>
 		</td>
 	</tr>
+	<tr>
+		<td>
+			<a href="https://github.com/ptma/Leaflet.Legend">Leaflet.Legend
+			</a>
+		</td>
+		<td>
+			Display legend symbols and toggle overlays(<a href="https://ptma.github.io/Leaflet.Legend/examples/legend.html">Demo</a>).
+		</td>
+		<td>
+			<a href="https://github.com/ptma">JJ Jin</a>
+		</td>
+	</tr>
 </table>
 
 
@@ -4039,6 +4062,15 @@ Print or export your map.
 			Allows users to print full page map directly from the browser.
 		</td><td>
 			<a href="https://github.com/Igor-Vladyka">Igor Vladyka</a>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<a href="https://github.com/pasichnykvasyl/Leaflet.BigImage">Leaflet.BigImage</a>
+		</td><td>
+			Allows users to download an image with a scaled-up version of the visible map.
+		</td><td>
+			<a href="https://github.com/pasichnykvasyl">Vasyl Pasichnyk (Oswald)</a>
 		</td>
 	</tr>
 </table>
