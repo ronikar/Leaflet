@@ -1614,7 +1614,11 @@ export var Map = Evented.extend({
 
 	// offset of the specified place to the current center in pixels
 	_getCenterOffset: function (latlng) {
-		return this.latLngToLayerPoint(latlng).subtract(this._getCenterLayerPoint());
+		if (this._rotate && this._bearing) {
+			return this.latLngToLayerPoint(latlng).subtract(this._getCenterLayerPoint()).rotateFrom(this._bearing, new Point(0, 0));
+		} else {
+			return this.latLngToLayerPoint(latlng).subtract(this._getCenterLayerPoint());
+		}
 	},
 
 	// adjust center for view to get inside bounds
