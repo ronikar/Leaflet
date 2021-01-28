@@ -1,6 +1,8 @@
-import * as L from 'leaflet';
+export as namespace L;
 
-declare module 'leaflet' {
+export * from 'leaflet';
+
+declare module 'leaflet-rotate-map' {
     interface RotatingMapOptions extends MapOptions {
         rotate?: boolean;
     }
@@ -11,7 +13,7 @@ declare module 'leaflet' {
         setBearing(theta: number): void;
     }
 
-    interface Point{
+    interface Point {
         rotate(theta: number): Point;
         rotateFrom(theta: number, pivot: Point): Point;
     }
