@@ -6,6 +6,7 @@ In addition, there are some improvements like:
 * Add getCircumscribedBounds
 * Fix Draggable
 * Fix `map.setView`
+* Fix `_onDragStart` when map has `maxBounds` and map is rotated
 
 ## Demo
 Look at `index.html` file in `examples` folder
