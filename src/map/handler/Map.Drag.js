@@ -5,7 +5,6 @@ import {Draggable} from '../../dom/Draggable';
 import * as Util from '../../core/Util';
 import * as DomUtil from '../../dom/DomUtil';
 import {toLatLngBounds as latLngBounds} from '../../geo/LatLngBounds';
-import {toBounds} from '../../geometry/Bounds';
 
 /*
  * L.Handler.MapDrag is used to make the map draggable (with panning inertia), enabled by default.
@@ -100,12 +99,7 @@ export var Drag = Handler.extend({
 		map._stop();
 		if (this._map.options.maxBounds && this._map.options.maxBoundsViscosity) {
 			var bounds = latLngBounds(this._map.options.maxBounds);
-
-			this._offsetLimit = toBounds(
-				this._map.latLngToContainerPoint(bounds.getNorthWest()).multiplyBy(-1),
-				this._map.latLngToContainerPoint(bounds.getSouthEast()).multiplyBy(-1)
-					.add(this._map.getSize()));
-
+			this._offsetLimit = this._map.boundsToContainerBounds(bounds);
 			this._viscosity = Math.min(1.0, Math.max(0.0, this._map.options.maxBoundsViscosity));
 		} else {
 			this._offsetLimit = null;

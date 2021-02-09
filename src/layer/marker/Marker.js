@@ -90,14 +90,13 @@ export var Marker = Layer.extend({
 
 		// @option autoPanSpeed: Number = 10
 		// Number of pixels the map should pan by.
-		autoPanSpeed: 10
+		autoPanSpeed: 10,
 
-		// TODO: Check if Leaflet Rotated Marker will work with the new version
-		// // @option alignedVertically: Bolean = true
-		// alignedVertically: true,
+		// @option alignedVertically: Bolean = true
+		alignedVertically: true,
 
-		// // @option rotationAngle: Number = 0;
-		// rotationAngle: 0
+		// @option rotationAngle: Number = 0;
+		rotationAngle: 0
 	},
 
 	/* @section
@@ -310,7 +309,7 @@ export var Marker = Layer.extend({
 
 	_setPos: function (pos) {
 		if (this._icon) {
-			if (this._map._rotate) {
+			if (this._map._rotate && this.options.alignedVertically) {
 				var anchor = this.options.icon.options.iconAnchor || new Point(0, 0);
 				DomUtil.setPositionAndRotation(this._icon, pos, -this._map._bearing || 0, pos.add(anchor));
 			} else {
