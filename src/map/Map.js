@@ -1120,6 +1120,32 @@ export var Map = Evented.extend({
 		return this.layerPointToContainerPoint(this.latLngToLayerPoint(toLatLng(latlng)));
 	},
 
+	// @method boundsToContainerBounds(bounds: LatLngBounds): Bounds
+	// Given latlng bounds, returns the bounds in projected pixel
+	// relative to the map container.
+	boundsToContainerBounds: function (bounds) {
+		if (this._rotate && this._bearing) {
+			var northWest = this.latLngToContainerPoint(bounds.getNorthWest());
+			var northEast = this.latLngToContainerPoint(bounds.getNorthEast());
+			var southWest = this.latLngToContainerPoint(bounds.getSouthWest());
+			var southEast = this.latLngToContainerPoint(bounds.getSouthEast());
+
+			var minX = Math.min(northWest.x, northEast.x, southEast.x, southWest.x);
+			var maxX = Math.max(northWest.x, northEast.x, southEast.x, southWest.x);
+			var minY = Math.min(northWest.y, northEast.y, southEast.y, southWest.y);
+			var maxY = Math.max(northWest.y, northEast.y, southEast.y, southWest.y);
+
+			return toBounds(
+				toPoint(minX, minY).multiplyBy(-1),
+				toPoint(maxX, maxY).multiplyBy(-1).add(this.getSize()));
+		} else {
+			return toBounds(
+				this.latLngToContainerPoint(bounds.getNorthWest()).multiplyBy(-1),
+				this.latLngToContainerPoint(bounds.getSouthEast()).multiplyBy(-1)
+					.add(this.getSize()));
+		}
+	},
+
 	// @method mouseEventToContainerPoint(ev: MouseEvent): Point
 	// Given a MouseEvent object, returns the pixel coordinate relative to the
 	// map container where the event took place.
@@ -1641,6 +1667,7 @@ export var Map = Evented.extend({
 		return this.unproject(centerPoint.add(offset), zoom);
 	},
 
+	// TODO: fix after drag bug
 	// adjust offset for view to get inside bounds
 	_limitOffset: function (offset, bounds) {
 		if (!bounds) { return offset; }
