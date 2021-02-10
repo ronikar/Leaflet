@@ -2,9 +2,9 @@ import * as Util from '../core/Util';
 import {Evented} from '../core/Events';
 import {EPSG3857} from '../geo/crs/CRS.EPSG3857';
 import {Point, toPoint} from '../geometry/Point';
-import {Bounds, toBounds} from '../geometry/Bounds';
+import {Bounds, toBounds, toCircumscribedBounds} from '../geometry/Bounds';
 import {LatLng, toLatLng} from '../geo/LatLng';
-import {LatLngBounds, toLatLngBounds} from '../geo/LatLngBounds';
+import {LatLngBounds, toLatLngBounds, toCircumscribedLatLngBounds} from '../geo/LatLngBounds';
 import * as Browser from '../core/Browser';
 import * as DomEvent from '../dom/DomEvent';
 import * as DomUtil from '../dom/DomUtil';
@@ -871,21 +871,12 @@ export var Map = Evented.extend({
 		}
 
 		var size = this.getSize(),
-		topLeft = this.layerPointToLatLng(this.containerPointToLayerPoint(toPoint(0, 0))),
-		topRight = this.layerPointToLatLng(this.containerPointToLayerPoint(toPoint(size.x, 0))),
-		bottomRight = this.layerPointToLatLng(this.containerPointToLayerPoint(toPoint(size.x, size.y))),
-		bottomLeft = this.layerPointToLatLng(this.containerPointToLayerPoint(toPoint(0, size.y)));
+		topLeft = this.containerPointToLatLng(toPoint(0, 0)),
+		topRight = this.containerPointToLatLng(toPoint(size.x, 0)),
+		bottomRight = this.containerPointToLatLng(toPoint(size.x, size.y)),
+		bottomLeft = this.containerPointToLatLng(toPoint(0, size.y));
 
-		var minLng = Math.min(topLeft.lng, topRight.lng, bottomRight.lng, bottomLeft.lng);
-		var maxLng = Math.max(topLeft.lng, topRight.lng, bottomRight.lng, bottomLeft.lng);
-
-		var minLat = Math.min(topLeft.lat, topRight.lat, bottomRight.lat, bottomLeft.lat);
-		var maxLat = Math.max(topLeft.lat, topRight.lat, bottomRight.lat, bottomLeft.lat);
-
-		var ne = new LatLng(maxLat, maxLng),
-		sw = new LatLng(minLat, minLng);
-
-		return new LatLngBounds(sw, ne);
+		return toCircumscribedLatLngBounds([topLeft, topRight, bottomRight, bottomLeft]);
 	},
 
 	// @method getMinZoom(): Number
@@ -1130,14 +1121,11 @@ export var Map = Evented.extend({
 			var southWest = this.latLngToContainerPoint(bounds.getSouthWest());
 			var southEast = this.latLngToContainerPoint(bounds.getSouthEast());
 
-			var minX = Math.min(northWest.x, northEast.x, southEast.x, southWest.x);
-			var maxX = Math.max(northWest.x, northEast.x, southEast.x, southWest.x);
-			var minY = Math.min(northWest.y, northEast.y, southEast.y, southWest.y);
-			var maxY = Math.max(northWest.y, northEast.y, southEast.y, southWest.y);
+			var circumscribedBounds = toCircumscribedBounds([northWest, northEast, southWest, southEast]);
 
 			return toBounds(
-				toPoint(minX, minY).multiplyBy(-1),
-				toPoint(maxX, maxY).multiplyBy(-1).add(this.getSize()));
+				circumscribedBounds.min.multiplyBy(-1),
+				circumscribedBounds.max.multiplyBy(-1).add(this.getSize()));
 		} else {
 			return toBounds(
 				this.latLngToContainerPoint(bounds.getNorthWest()).multiplyBy(-1),
@@ -1672,8 +1660,21 @@ export var Map = Evented.extend({
 	_limitOffset: function (offset, bounds) {
 		if (!bounds) { return offset; }
 
-		var viewBounds = this.getPixelBounds(),
-		    newBounds = new Bounds(viewBounds.min.add(offset), viewBounds.max.add(offset));
+		var viewBounds;
+
+		if (this._rotate) {
+			var size = this.getSize(),
+			topLeft = this.project(this.containerPointToLatLng(toPoint(0, 0))),
+			topRight = this.project(this.containerPointToLatLng(toPoint(size.x, 0))),
+			bottomRight = this.project(this.containerPointToLatLng(toPoint(size.x, size.y))),
+			bottomLeft = this.project(this.containerPointToLatLng(toPoint(0, size.y)));
+
+			viewBounds = toCircumscribedBounds([topLeft, topRight, bottomRight, bottomLeft]);
+		} else {
+			viewBounds = this.getPixelBounds();
+		}
+
+		var newBounds = new Bounds(viewBounds.min.add(offset), viewBounds.max.add(offset));
 
 		return offset.add(this._getBoundsOffset(newBounds, bounds));
 	},

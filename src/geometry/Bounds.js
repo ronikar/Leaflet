@@ -171,3 +171,13 @@ export function toBounds(a, b) {
 	}
 	return new Bounds(a, b);
 }
+
+export function toCircumscribedBounds(points) {
+	var minX = points.reduce(function (pv, v) { return Math.min(pv, v.x); }, points[0].x);
+	var maxX = points.reduce(function (pv, v) { return Math.max(pv, v.x); }, points[0].x);
+
+	var minY = points.reduce(function (pv, v) { return Math.min(pv, v.y); }, points[0].y);
+	var maxY = points.reduce(function (pv, v) { return Math.max(pv, v.y); }, points[0].y);
+
+	return toBounds(toPoint(minX, minY), toPoint(maxX, maxY));
+}

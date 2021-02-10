@@ -249,3 +249,16 @@ export function toLatLngBounds(a, b) {
 	}
 	return new LatLngBounds(a, b);
 }
+
+export function toCircumscribedLatLngBounds(latlngs) {
+	var minLng = latlngs.reduce(function (pv, v) { return Math.min(pv, v.lng); }, latlngs[0].lng);
+	var maxLng = latlngs.reduce(function (pv, v) { return Math.max(pv, v.lng); }, latlngs[0].lng);
+
+	var minLat = latlngs.reduce(function (pv, v) { return Math.min(pv, v.lat); }, latlngs[0].lat);
+	var maxLat = latlngs.reduce(function (pv, v) { return Math.max(pv, v.lat); }, latlngs[0].lat);
+
+	var ne = new LatLng(maxLat, maxLng),
+	sw = new LatLng(minLat, minLng);
+
+	return new LatLngBounds(sw, ne);
+}
