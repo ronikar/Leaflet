@@ -228,11 +228,21 @@ export var Popup = DivOverlay.extend({
 	},
 
 	_animateZoom: function (e) {
+		var transformProperty = DomUtil.TRANSFORM;
 		var pos = this._map._latLngToNewLayerPoint(this._latlng, e.zoom, e.center),
 		    anchor = this._getAnchor();
 
 		if (this._map._rotate) {
-			DomUtil.setPositionAndRotation(this._container, pos.add(anchor), -this._map._bearing, pos.add(anchor));
+			var alignmentAngle = -this._map._bearing;
+			anchor = anchor.rotateFrom(alignmentAngle, toPoint(0, 0));
+			DomUtil.setPosition(this._container, pos.add(anchor));
+
+			this._container.style[`${transformProperty}Origin`] = 'bottom';
+			this._container.style[transformProperty] = `${this._container.style[transformProperty]} rotate(${alignmentAngle}rad)`;
+
+			var marginBottom = 20;
+			this._container.style['marginLeft'] = `${marginBottom * Math.sin(alignmentAngle)}px`;
+			this._container.style['marginBottom'] = `${marginBottom * Math.cos(alignmentAngle)}px`;
 		} else {
 			DomUtil.setPosition(this._container, pos.add(anchor));
 		}
@@ -339,10 +349,6 @@ Map.include({
 
 		this._popup = popup;
 		var layer = this.addLayer(popup);
-
-		if (this.options.rotate) {
-			popup._container.style['transformOrigin'] = '50% 124%'; // Magic number, based on trials. Old version - "55% 184%"
-		}
 
 		return layer;
 	},

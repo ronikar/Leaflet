@@ -215,15 +215,31 @@ export var DivOverlay = Layer.extend({
 	_updatePosition: function () {
 		if (!this._map) { return; }
 
+		var transformProperty = DomUtil.TRANSFORM;
+
 		var pos = this._map.latLngToLayerPoint(this._latlng),
 		    offset = toPoint(this.options.offset),
 		    anchor = this._getAnchor();
 
 		if (this._zoomAnimated) {
 			if (this._map.options.rotate) {
-				DomUtil.setPositionAndRotation(this._container, pos.add(anchor), -this._map._bearing, pos.add(anchor));
-			} else {
-				DomUtil.setPosition(this._container, pos.add(anchor));
+				var alignmentAngle = -this._map._bearing;
+				anchor = anchor.rotateFrom(alignmentAngle, toPoint(0, 0));
+				offset = offset.rotateFrom(alignmentAngle, toPoint(0, 0));
+			}
+
+			DomUtil.setPosition(this._container, pos.add(anchor));
+
+			if (this._map.options.rotate) {
+				this._container.style[`${transformProperty}Origin`] = 'bottom';
+				this._container.style[transformProperty] = `${this._container.style[transformProperty]} rotate(${alignmentAngle}rad)`;
+
+				var marginBottom = this._container.className.indexOf('leaflet-popup') !== -1 ? 20 : this._container.style['marginBottom'];
+
+				if (marginBottom) {
+					this._container.style['marginLeft'] = `${marginBottom * Math.sin(alignmentAngle)}px`;
+					this._container.style['marginBottom'] = `${marginBottom * Math.cos(alignmentAngle)}px`;
+				}
 			}
 		} else {
 			offset = offset.add(pos).add(anchor);
