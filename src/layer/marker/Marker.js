@@ -2,8 +2,10 @@ import {Layer} from '../Layer';
 import {IconDefault} from './Icon.Default';
 import * as Util from '../../core/Util';
 import {toLatLng as latLng} from '../../geo/LatLng';
-import {Point} from '../../geometry/Point';
+import {toPoint as point, Point} from '../../geometry/Point';
+
 import * as DomUtil from '../../dom/DomUtil';
+import * as DomEvent from '../../dom/DomEvent';
 import {MarkerDrag} from './Marker.Drag';
 
 /*
@@ -39,11 +41,13 @@ export var Marker = Layer.extend({
 
 		// @option title: String = ''
 		// Text for the browser tooltip that appear on marker hover (no tooltip by default).
+		// [Useful for accessibility](https://leafletjs.com/examples/accessibility/#markers-must-be-labelled).
 		title: '',
 
-		// @option alt: String = ''
-		// Text for the `alt` attribute of the icon image (useful for accessibility).
-		alt: '',
+		// @option alt: String = 'Marker'
+		// Text for the `alt` attribute of the icon image.
+		// [Useful for accessibility](https://leafletjs.com/examples/accessibility/#markers-must-be-labelled).
+		alt: 'Marker',
 
 		// @option zIndexOffset: Number = 0
 		// By default, marker images zIndex is set automatically based on its latitude. Use this option if you want to put the marker on top of all others (or below), specifying a high value like `1000` (or high negative value, respectively).
@@ -73,6 +77,12 @@ export var Marker = Layer.extend({
 		// When `true`, a mouse event on this marker will trigger the same event on the map
 		// (unless [`L.DomEvent.stopPropagation`](#domevent-stoppropagation) is used).
 		bubblingMouseEvents: false,
+
+		// @option autoPanOnFocus: Boolean = true
+		// When `true`, the map will pan whenever the marker is focused (via
+		// e.g. pressing `tab` on the keyboard) to ensure the marker is
+		// visible within the map's bounds
+		autoPanOnFocus: true,
 
 		// @section Draggable marker options
 		// @option draggable: Boolean = false
@@ -246,6 +256,7 @@ export var Marker = Layer.extend({
 
 		if (options.keyboard) {
 			icon.tabIndex = '0';
+			icon.setAttribute('role', 'button');
 		}
 
 		this._icon = icon;
@@ -255,6 +266,10 @@ export var Marker = Layer.extend({
 				mouseover: this._bringToFront,
 				mouseout: this._resetZIndex
 			});
+		}
+
+		if (this.options.autoPanOnFocus) {
+			DomEvent.on(icon, 'focus', this._panOnFocus, this);
 		}
 
 		var newShadow = options.icon.createShadow(this._shadow),
@@ -292,6 +307,10 @@ export var Marker = Layer.extend({
 				mouseover: this._bringToFront,
 				mouseout: this._resetZIndex
 			});
+		}
+
+		if (this.options.autoPanOnFocus) {
+			DomEvent.off(this._icon, 'focus', this._panOnFocus, this);
 		}
 
 		DomUtil.remove(this._icon);
@@ -390,6 +409,20 @@ export var Marker = Layer.extend({
 
 	_resetZIndex: function () {
 		this._updateZIndex(0);
+	},
+
+	_panOnFocus: function () {
+		var map = this._map;
+		if (!map) { return; }
+
+		var iconOpts = this.options.icon.options;
+		var size = iconOpts.iconSize ? point(iconOpts.iconSize) : point(0, 0);
+		var anchor = iconOpts.iconAnchor ? point(iconOpts.iconAnchor) : point(0, 0);
+
+		map.panInside(this._latlng, {
+			paddingTopLeft: anchor,
+			paddingBottomRight: size.subtract(anchor)
+		});
 	},
 
 	_getPopupAnchor: function () {

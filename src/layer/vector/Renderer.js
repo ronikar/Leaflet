@@ -1,8 +1,8 @@
 import {Layer} from '../Layer';
 import * as DomUtil from '../../dom/DomUtil';
 import * as Util from '../../core/Util';
-import * as Browser from '../../core/Browser';
-// import {Bounds} from '../../geometry/Bounds';
+import Browser from '../../core/Browser';
+import {Bounds} from '../../geometry/Bounds';
 
 
 
@@ -34,11 +34,7 @@ export var Renderer = Layer.extend({
 		// @option padding: Number = 0.1
 		// How much to extend the clip area around the map view (relative to its size)
 		// e.g. 0.1 would be 10% of map view in each direction
-		padding: 0.1,
-
-		// @option tolerance: Number = 0
-		// How much to extend click tolerance round a path/object on the map
-		tolerance : 0
+		padding: 0.1
 	},
 
 	initialize: function (options) {
@@ -138,7 +134,7 @@ export var Renderer = Layer.extend({
 		    padMax = size.multiplyBy(1 + p),
 		    // // TODO: Somehow refactor this out into map.something() - the code is
 		    // //   pretty much the same as in GridLayer.
-		    clip = new L.Bounds([
+		    clip = new Bounds([
 			    map.containerPointToLayerPoint([padMin.x, padMin.y]).floor(),
 			    map.containerPointToLayerPoint([padMin.x, padMax.y]).floor(),
 			    map.containerPointToLayerPoint([padMax.x, padMin.y]).floor(),
