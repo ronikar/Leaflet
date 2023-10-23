@@ -529,6 +529,10 @@ export var Map = Evented.extend({
 	// If `latlng` is already within the (optionally padded) display bounds,
 	// the map will not be panned.
 	panInside: function (latlng, options) {
+		// TODO: fix panInside with rotation
+		if (this._rotate) {
+			return this;
+		}
 		options = options || {};
 
 		var paddingTL = toPoint(options.paddingTopLeft || options.padding || [0, 0]),
