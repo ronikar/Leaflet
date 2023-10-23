@@ -1,5 +1,5 @@
 /* @preserve
- * Leaflet 1.9.3+rotate-pacakge.9b221cb, a JS library for interactive maps. https://leafletjs.com
+ * Leaflet 1.9.3+rotate.9b221cb, a JS library for interactive maps. https://leafletjs.com
  * (c) 2010-2023 Vladimir Agafonkin, (c) 2010-2011 CloudMade
  */
 
@@ -3705,6 +3705,10 @@ var Map = Evented.extend({
 	// If `latlng` is already within the (optionally padded) display bounds,
 	// the map will not be panned.
 	panInside: function (latlng, options) {
+		// TODO: fix panInside with rotation
+		if (this._rotate){
+			return this;
+		}
 		options = options || {};
 
 		var paddingTL = toPoint(options.paddingTopLeft || options.padding || [0, 0]),

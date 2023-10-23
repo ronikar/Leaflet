@@ -1,6 +1,6 @@
 {
   "name": "leaflet-rotate-map",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Enable to rotate Leaflet map",
   "main": "leaflet-src.js",
   "types": "index.d.ts",
