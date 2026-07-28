@@ -1,5 +1,5 @@
 /* @preserve
- * Leaflet 1.9.4+rotate-package.8c16b71, a JS library for interactive maps. https://leafletjs.com
+ * Leaflet 1.9.4+rotate-package.8874f4b, a JS library for interactive maps. https://leafletjs.com
  * (c) 2010-2026 Vladimir Agafonkin, (c) 2010-2011 CloudMade
  */
 
