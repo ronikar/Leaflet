@@ -58,6 +58,7 @@
     "ignorePatterns": [
       "dist",
       "debug",
+      "rotate-package",
       "docs/docs/highlight",
       "docs/examples/choropleth/us-states.js",
       "docs/examples/geojson/sample-geojson.js",
