@@ -1,6 +1,6 @@
 /* @preserve
- * Leaflet 1.9.3+rotate-package.9b221cb, a JS library for interactive maps. https://leafletjs.com
- * (c) 2010-2023 Vladimir Agafonkin, (c) 2010-2011 CloudMade
+ * Leaflet 1.9.4+rotate-package.8c16b71, a JS library for interactive maps. https://leafletjs.com
+ * (c) 2010-2026 Vladimir Agafonkin, (c) 2010-2011 CloudMade
  */
 
 (function (global, factory) {
@@ -9,7 +9,7 @@
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.leaflet = {}));
 })(this, (function (exports) { 'use strict';
 
-  var version = "1.9.3+rotate.71f73785";
+  var version = "1.9.4+rotate.0392b7f4";
 
   /*
    * @namespace Util
@@ -2693,8 +2693,8 @@
   	if (!element.style) { return; }
   	restoreOutline();
   	_outlineElement = element;
-  	_outlineStyle = element.style.outline;
-  	element.style.outline = 'none';
+  	_outlineStyle = element.style.outlineStyle;
+  	element.style.outlineStyle = 'none';
   	on(window, 'keydown', restoreOutline);
   }
 
@@ -2702,7 +2702,7 @@
   // Cancels the effects of a previous [`L.DomUtil.preventOutline`]().
   function restoreOutline() {
   	if (!_outlineElement) { return; }
-  	_outlineElement.style.outline = _outlineStyle;
+  	_outlineElement.style.outlineStyle = _outlineStyle;
   	_outlineElement = undefined;
   	_outlineStyle = undefined;
   	off(window, 'keydown', restoreOutline);
@@ -3712,7 +3712,7 @@
   	// the map will not be panned.
   	panInside: function (latlng, options) {
   		// TODO: fix panInside with rotation
-  		if (this._rotate){
+  		if (this._rotate) {
   			return this;
   		}
   		options = options || {};
@@ -4992,7 +4992,7 @@
 
   		requestAnimFrame(function () {
   			this
-  			    ._moveStart(true, false)
+  			    ._moveStart(true, options.noMoveStart || false)
   			    ._animateZoom(center, zoom, true);
   		}, this);
 
@@ -5315,6 +5315,7 @@
   		this._layers = [];
   		this._lastZIndex = 0;
   		this._handlingClick = false;
+  		this._preventClick = false;
 
   		for (var i in baseLayers) {
   			this._addLayer(baseLayers[i], i);
@@ -5590,6 +5591,11 @@
   	},
 
   	_onInputClick: function () {
+  		// expanding the control on mobile with a click can cause adding a layer - we don't want this
+  		if (this._preventClick) {
+  			return;
+  		}
+
   		var inputs = this._layerControlInputs,
   		    input, layer;
   		var addedLayers = [],
@@ -5649,10 +5655,13 @@
 
   	_expandSafely: function () {
   		var section = this._section;
+  		this._preventClick = true;
   		on(section, 'click', preventDefault);
   		this.expand();
+  		var that = this;
   		setTimeout(function () {
   			off(section, 'click', preventDefault);
+  			that._preventClick = false;
   		});
   	}
 
@@ -6359,8 +6368,12 @@
   		enableImageDrag();
   		enableTextSelection();
 
-  		if (this._moved && this._moving) {
+  		var fireDragend = this._moved && this._moving;
 
+  		this._moving = false;
+  		Draggable._dragging = false;
+
+  		if (fireDragend) {
   			// @event dragend: DragEndEvent
   			// Fired when the drag ends.
   			this.fire('dragend', {
@@ -6368,9 +6381,6 @@
   				distance: this._newPos.distanceTo(this._startPos)
   			});
   		}
-
-  		this._moving = false;
-  		Draggable._dragging = false;
   	}
 
   });
@@ -11259,7 +11269,7 @@
   	},
 
   	_addFocusListenersOnLayer: function (layer) {
-  		var el = layer.getElement();
+  		var el = typeof layer.getElement === 'function' && layer.getElement();
   		if (el) {
   			on(el, 'focus', function () {
   				this._tooltip._source = layer;
@@ -11270,7 +11280,7 @@
   	},
 
   	_setAriaDescribedByOnLayer: function (layer) {
-  		var el = layer.getElement();
+  		var el = typeof layer.getElement === 'function' && layer.getElement();
   		if (el) {
   			el.setAttribute('aria-describedby', this._tooltip._container.id);
   		}
@@ -11278,9 +11288,21 @@
 
 
   	_openTooltip: function (e) {
-  		if (!this._tooltip || !this._map || (this._map.dragging && this._map.dragging.moving())) {
+  		if (!this._tooltip || !this._map) {
   			return;
   		}
+
+  		// If the map is moving, we will show the tooltip after it's done.
+  		if (this._map.dragging && this._map.dragging.moving() && !this._openOnceFlag) {
+  			this._openOnceFlag = true;
+  			var that = this;
+  			this._map.once('moveend', function () {
+  				that._openOnceFlag = false;
+  				that._openTooltip(e);
+  			});
+  			return;
+  		}
+
   		this._tooltip._source = e.layer || e.target;
 
   		this.openTooltip(this._tooltip.options.sticky ? e.latlng : undefined);
@@ -12758,9 +12780,8 @@
   		if (!this._container) {
   			this._initContainer(); // defined by renderer implementations
 
-  			if (this._zoomAnimated) {
-  				addClass(this._container, 'leaflet-zoom-animated');
-  			}
+  			// always keep transform-origin as 0 0
+  			addClass(this._container, 'leaflet-zoom-animated');
   		}
 
   		this.getPane().appendChild(this._container);
