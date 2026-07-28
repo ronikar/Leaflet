@@ -20,7 +20,7 @@ Look at `index.html` file in `examples` folder
 <script src="leaflet-src.js"></script>
 ```
 
-* You can also use `npm install leaflet-rotate-map` or `yarn add leaflet-rotate-map`.
+* You can also use `npm install @ronikar/leaflet-rotate-map` or `yarn add @ronikar/leaflet-rotate-map`.
 
 ### L.map(id, options)
 

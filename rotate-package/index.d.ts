@@ -2,7 +2,7 @@ export as namespace L;
 
 export * from 'leaflet';
 
-declare module 'leaflet-rotate-map' {
+declare module '@ronikar/leaflet-rotate-map' {
     interface RotatingMapOptions extends MapOptions {
         rotate?: boolean;
     }
