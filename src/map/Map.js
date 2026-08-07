@@ -1028,9 +1028,22 @@ export var Map = Evented.extend({
 
 	// @method latLngToLayerPoint(latlng: LatLng): Point
 	// Given a geographical coordinate, returns the corresponding pixel coordinate
-	// relative to the [origin pixel](#map-getpixelorigin).
+	// relative to the [origin pixel](#map-getpixelorigin). Snapped to whole pixels,
+	// except on a rotated map, where the result is exact and so fractional.
 	latLngToLayerPoint: function (latlng) {
-		var projectedPoint = this.project(toLatLng(latlng))._round();
+		var projectedPoint = this.project(toLatLng(latlng));
+
+		// The snap cancels out while unrotated, since layer and container points
+		// then differ only by the integral map pane offset. Under rotation it does
+		// not, and leaks up to 0.71px into everything built on this method; nor does
+		// it buy crispness, the rotate pane being CSS-rotated anyway. Do not round
+		// unconditionally: consumers needing whole pixels round for themselves
+		// (`Marker.update`, `ImageOverlay._reset`).
+		// See https://github.com/ronikar/Leaflet/issues/3
+		if (!(this._rotate && this._bearing)) {
+			projectedPoint._round();
+		}
+
 		return projectedPoint._subtract(this.getPixelOrigin());
 	},
 
