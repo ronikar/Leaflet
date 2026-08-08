@@ -134,6 +134,33 @@ describe("Map.Rotate", function () {
 			expect(style.height).to.equal(Math.round(parseFloat(style.height)) + 'px');
 		});
 
+		// Layer points are fractional when rotated, so SVG.Util.pointsToPath caps
+		// them at 0.1px rather than writing full doubles (~4.6x longer).
+		it.skipIfNo3d("keeps SVG path coordinates short when rotated", function () {
+			map.setBearing(45);
+
+			var latlngs = [],
+			    lat = 51.5,
+			    lng = -0.1;
+
+			for (var i = 0; i < 50; i++) {
+				lat += Math.sin(i) * 0.0004;
+				lng += Math.cos(i) * 0.0006;
+				latlngs.push([lat, lng]);
+			}
+
+			var line = L.polyline(latlngs).addTo(map),
+			    d = line.getElement().getAttribute('d'),
+			    coords = d.replace(/[ML]/g, ' ').trim().split(/[\s]+/);
+
+			expect(coords.length).to.be.greaterThan(1);
+
+			for (i = 0; i < coords.length; i++) {
+				var decimals = (coords[i].split('.')[1] || '').length;
+				expect(decimals).to.be.lessThan(2);
+			}
+		});
+
 		it.skipIfNo3d("#layerPointToContainerPoint inverts #containerPointToLayerPoint when rotated", function () {
 			map.setBearing(45);
 
