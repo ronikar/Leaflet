@@ -221,10 +221,12 @@ export var ImageOverlay = Layer.extend({
 	},
 
 	_reset: function () {
+		// `size` goes straight into CSS `width`/`height`, so keep it whole:
+		// `latLngToLayerPoint` no longer snaps on rotated maps. No-op otherwise.
 		var image = this._image,
 		    bounds = new Bounds(
-		        this._map.latLngToLayerPoint(this._bounds.getNorthWest()),
-		        this._map.latLngToLayerPoint(this._bounds.getSouthEast())),
+		        this._map.latLngToLayerPoint(this._bounds.getNorthWest())._round(),
+		        this._map.latLngToLayerPoint(this._bounds.getSouthEast())._round()),
 		    size = bounds.getSize();
 
 		DomUtil.setPosition(image, bounds.min);
